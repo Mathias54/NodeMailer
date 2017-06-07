@@ -74,12 +74,30 @@ function NodeMailer(optionsTransporter, optionsMailer) {
     this.retornaHtmlGerado = function () {
         geraHTML();
         return html;
-    }
+    };
+
+    /**
+     * TODO
+     * 1) separar as configurações de template dos optionsMailer
+     * 2) gerar gets e sets
+     * 3) fazer o envio de e-mail funcionar
+     * 4) adicionar arquivos json de configuração padrão, caso nada seja passado por parametro
+     *
+     */
+
 }
 
 
 
-
+// const nodemailer = new NodeMailer();
+//
+// nodemailer.setTemplate('recuperar-senha', {
+//     mensagem: '*URL PARA RECUPERAR SENHA*'
+// });
+//
+// nodemailer.sendEmail((erro, info)=>{
+//     console.log('e-mail enviado' + info);
+// });
 
 
 const nodemailer = new NodeMailer({
@@ -105,3 +123,4 @@ const nodemailer = new NodeMailer({
 const objeto = nodemailer.geraObjetoOptions();
 console.log(objeto);
 console.log(nodemailer.retornaHtmlGerado());
+
