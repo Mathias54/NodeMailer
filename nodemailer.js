@@ -2,6 +2,19 @@
  * Created by mathias on 07/06/17.
  */
 'use strict';
+/**
+ *
+ * Implementar como fosse uma classe, algo mais ou menos assim:
+ * const sendEmail = new NodeMailer();
+ * sendEmail.setFrom = 'mathiasgheno@gmail.com';
+ * sendEmail.setTemplate('sejaBemVindo');
+ * sendEmail.enviar( (erro, info) =>{
+ *  console.log('email enviado');
+ * };
+ *
+ *
+ */
+
 
 const nodemailer = require('nodemailer');
 const ejs = require('ejs');

@@ -1,6 +1,6 @@
 let ejs = require('ejs'),
     people = ['geddy', 'neil', 'alex'],
     fs = require('fs');
-    html = ejs.render( fs.readFileSync('e-mail.ejs', 'utf-8') , {mensagem: 'olá, funciona'});
+    html = ejs.render( fs.readFileSync('e-mail.ejs', 'utf-8') , {mensagem: 'olá, funciona', oi: 'oi'});
 
 console.log(html);
