@@ -4,12 +4,18 @@
 
 const ejs = require('ejs');
 const fs = require('fs');
+const _padraoTransporter = require('./config/transporter');
+const _padraoMailer = require('./config/mailer');
+const _padraoTemplate = require('./config/template');
 
 /**
  *
+ * @param {Object} optionsTransporter padrão vazio
+ * @param {Object} optionsTemplate padrão vazio
+ * @param {Object} optionsMailer padrão vazio
  * @constructor
  */
-function NodeMailer(optionsTransporter, optionsMailer) {
+function NodeMailer(optionsTransporter = _padraoTransporter, optionsMailer = _padraoMailer, optionsTemplate = _padraoTemplate) {
 
     /**
      * configurações da Transporter
@@ -28,13 +34,20 @@ function NodeMailer(optionsTransporter, optionsMailer) {
     from = optionsMailer.from ? optionsMailer.from : '';
     to = optionsMailer.to ? optionsMailer.to : '';
     subject = optionsMailer.subject ? optionsMailer.subject : '';
-
-    template = optionsMailer.template ? optionsMailer.template : '';
-    codificacao = optionsMailer.codificacao ? optionsMailer.codificacao : '';
-    mensagens = optionsMailer.mensagens ? optionsMailer.mensagens : optionsMailer.mensagens ='';
-
     html = optionsMailer.html ? optionsMailer.html : optionsMailer.html ='';
 
+    /**
+     * configurações para geracao do template
+     */
+    template = optionsTemplate.template ? optionsTemplate.template : '';
+    codificacao = optionsTemplate.codificacao ? optionsTemplate.codificacao : '';
+    mensagens = optionsTemplate.mensagens ? optionsTemplate.mensagens : optionsTemplate.mensagens ='';
+
+    /**
+     * função interna que gera o html do template
+     * @function
+     * @return {String}
+     */
     let geraHTML = function () {
         html = ejs.render(
             fs.readFileSync(template, codificacao) ,
@@ -71,22 +84,80 @@ function NodeMailer(optionsTransporter, optionsMailer) {
         }
     };
 
-    this.retornaHtmlGerado = function () {
+    /**
+     * Retorna um objeto literal com as configurações necessárias para a geração dos templates
+     * @returns {Object}
+     */
+    this.geraObjetoOptionsTemplate = function () {
+        return {
+            template: template,
+            codificacao: codificacao,
+            mensagens: mensagens
+        }
+    };
+
+    /**
+     * Retorna o html gerado para o template
+     * @return {String}
+     */
+    this.geraHtmlTemplate = function () {
         geraHTML();
         return html;
     };
 
     /**
+     * Retorna os valores de todas as propriedades
+     * @return {Object}
+     */
+    this.geraTodasAsConfiguracoes = function () {
+        return {
+            host: host,
+            port: port,
+            secure: secure,
+            auth: {
+                user: auth.user,
+                pass: auth.pass
+            },
+            from: from,
+            to: to,
+            subject: subject,
+            html: html,
+            template: template,
+            codificacao: codificacao,
+            mensagens: mensagens,
+        }
+    };
+
+    /**
+     * Retorna um objeto único com todas as configurações padrões
+     * @method
+     * @return {Object}
+     */
+    this.geraObjetoComValoresPadroes = function () {
+
+        let padraoTransporter = _padraoTransporter;
+        let padraoMailer = Object.keys(_padraoMailer);
+        let padraoTemplate = Object.keys(_padraoTemplate);
+
+        for(let i=0; i<padraoMailer.length; i++){
+            padraoTransporter[padraoMailer[i]] = _padraoMailer[padraoMailer[i]];
+        }
+        for (let j=0; j<padraoTemplate.length; j++){
+            padraoTransporter[padraoTemplate[j]] = _padraoTemplate[padraoTemplate[j]];
+        }
+
+        return padraoTransporter;
+    };
+
+    /**
      * TODO
-     * 1) separar as configurações de template dos optionsMailer
      * 2) gerar gets e sets
      * 3) fazer o envio de e-mail funcionar
-     * 4) adicionar arquivos json de configuração padrão, caso nada seja passado por parametro
-     *
+     * 4) verificar valores com utilziando gets e sets;
      */
 
 }
-
+module.exports = NodeMailer;
 
 
 // const nodemailer = new NodeMailer();
@@ -100,7 +171,7 @@ function NodeMailer(optionsTransporter, optionsMailer) {
 // });
 
 
-const nodemailer = new NodeMailer({
+const optionsTransporter = {
     host: 'gmail',
     port: 465,
     secure: true,
@@ -108,19 +179,23 @@ const nodemailer = new NodeMailer({
         user: 'aplicativoliberep@gmail.com',
         pass: 'mgrossagrossa'
     }
-}, {
+};
+
+const optionsMail = {
     from: '"Aplicativo Liberep" <aplicativoliberep@gmail.com>',
     to: 'mathiasgheno@gmail.com',
     subject: 'Teste Templete ✔',
+    html: '<html>oi</html>'
+};
+
+const optionTamplate = {
     template: 'e-mail.ejs',
     codificacao: 'utf-8',
     mensagens: {
         mensagem: 'olá, funciona'
     },
-    html: '<html>oi</html>'
-});
+};
 
-const objeto = nodemailer.geraObjetoOptions();
-console.log(objeto);
-console.log(nodemailer.retornaHtmlGerado());
-
+let mailer = new NodeMailer(optionsTransporter, optionsMail, optionTamplate);
+console.log(mailer.geraObjetoComValoresPadroes());
+console.log(mailer.geraTodasAsConfiguracoes());
