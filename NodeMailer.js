@@ -7,6 +7,7 @@ const fs = require('fs');
 const _padraoTransporter = require('./config/transporter');
 const _padraoMailer = require('./config/mailer');
 const _padraoTemplate = require('./config/template');
+const nodemailer = require('nodemailer');
 
 /**
  *
@@ -15,33 +16,36 @@ const _padraoTemplate = require('./config/template');
  * @param {Object} optionsMailer padrão vazio
  * @constructor
  */
-function NodeMailer(optionsTransporter = _padraoTransporter, optionsMailer = _padraoMailer, optionsTemplate = _padraoTemplate) {
+function NodeMailer(
+    optionsTransporter = _padraoTransporter,
+    optionsMailer = _padraoMailer,
+    optionsTemplate = _padraoTemplate) {
 
     /**
      * configurações da Transporter
      */
-    host = optionsTransporter.host ? optionsTransporter.host : '';
-    port = optionsTransporter.port ? optionsTransporter.port : '';
-    secure = optionsTransporter.secure ? optionsTransporter.secure : '';
+    host = optionsTransporter.host ? optionsTransporter.host : _padraoTransporter.host;
+    port = optionsTransporter.port ? optionsTransporter.port : _padraoTransporter.port;
+    secure = optionsTransporter.secure ? optionsTransporter.secure : _padraoTransporter.secure;
     auth = {
-        user: optionsTransporter.auth.user ? optionsTransporter.auth.user : '',
-        pass: optionsTransporter.auth.pass ? optionsTransporter.auth.pass : ''
+        user: optionsTransporter.auth.user ? optionsTransporter.auth.user : _padraoTransporter.auth.user,
+        pass: optionsTransporter.auth.pass ? optionsTransporter.auth.pass : _padraoTransporter.auth.pass
     };
 
     /**
      * configurações da Options de envio do e-mail
      */
-    from = optionsMailer.from ? optionsMailer.from : '';
-    to = optionsMailer.to ? optionsMailer.to : '';
-    subject = optionsMailer.subject ? optionsMailer.subject : '';
-    html = optionsMailer.html ? optionsMailer.html : optionsMailer.html ='';
+    from = optionsMailer.from ? optionsMailer.from : _padraoMailer.from;
+    to = optionsMailer.to ? optionsMailer.to : _padraoMailer.to;
+    subject = optionsMailer.subject ? optionsMailer.subject : _padraoMailer.subject;
+    html = optionsMailer.html ? optionsMailer.html : optionsMailer.html = _padraoMailer.html;
 
     /**
      * configurações para geracao do template
      */
-    template = optionsTemplate.template ? optionsTemplate.template : '';
-    codificacao = optionsTemplate.codificacao ? optionsTemplate.codificacao : '';
-    mensagens = optionsTemplate.mensagens ? optionsTemplate.mensagens : optionsTemplate.mensagens ='';
+    template = optionsTemplate.template ? optionsTemplate.template : _padraoTemplate.template;
+    codificacao = optionsTemplate.codificacao ? optionsTemplate.codificacao : _padraoTemplate.codificacao;
+    mensagens = optionsTemplate.mensagens ? optionsTemplate.mensagens : _padraoTemplate.mensagens;
 
     /**
      * função interna que gera o html do template
@@ -50,7 +54,7 @@ function NodeMailer(optionsTransporter = _padraoTransporter, optionsMailer = _pa
      */
     let geraHTML = function () {
         html = ejs.render(
-            fs.readFileSync(template, codificacao) ,
+            fs.readFileSync(template, codificacao),
             mensagens
         );
     };
@@ -76,7 +80,7 @@ function NodeMailer(optionsTransporter = _padraoTransporter, optionsMailer = _pa
      * @returns {Object}
      */
     this.geraObjetoOptions = function () {
-        return{
+        return {
             from: from,
             to: to,
             subject: subject,
@@ -139,10 +143,10 @@ function NodeMailer(optionsTransporter = _padraoTransporter, optionsMailer = _pa
         let padraoMailer = Object.keys(_padraoMailer);
         let padraoTemplate = Object.keys(_padraoTemplate);
 
-        for(let i=0; i<padraoMailer.length; i++){
+        for (let i = 0; i < padraoMailer.length; i++) {
             padraoTransporter[padraoMailer[i]] = _padraoMailer[padraoMailer[i]];
         }
-        for (let j=0; j<padraoTemplate.length; j++){
+        for (let j = 0; j < padraoTemplate.length; j++) {
             padraoTransporter[padraoTemplate[j]] = _padraoTemplate[padraoTemplate[j]];
         }
 
@@ -150,52 +154,223 @@ function NodeMailer(optionsTransporter = _padraoTransporter, optionsMailer = _pa
     };
 
     /**
-     * TODO
-     * 2) gerar gets e sets
-     * 3) fazer o envio de e-mail funcionar
-     * 4) verificar valores com utilziando gets e sets;
+     *
+     * @param _host {String}
      */
+    this.setHost = function (_host) {
+        host = _host;
+    };
 
+    /**
+     *
+     * @return {string}
+     */
+    this.getHost = function () {
+        return host;
+    };
+
+    /**
+     *
+     * @param _port {Number}
+     */
+    this.setPort = function (_port) {
+        port = _port;
+    };
+
+    /**
+     *
+     * @return {number}
+     */
+    this.getPort = function () {
+        return port;
+    };
+
+    /**
+     *
+     * @param _secure {String}
+     */
+    this.setSecure = function (_secure) {
+        secure = _secure;
+    };
+
+    /**
+     *
+     * @return {String}
+     */
+    this.getSecure = function () {
+        return secure;
+    };
+
+    /**
+     *
+     * @param _auth {{user: string, pass: string}}
+     */
+    this.setAuth = function (_auth) {
+        auth = _auth;
+    };
+
+    /**
+     *
+     * @return {{user: string, pass: string}}
+     */
+    this.getAuth = function () {
+        return auth;
+    };
+
+    /**
+     *
+     * @param _from {String}
+     */
+    this.setFrom = function (_from) {
+        from = _from;
+    };
+
+    /**
+     *
+     * @return {String}
+     */
+    this.getFrom = function () {
+        return from;
+    };
+
+    /**
+     *
+     * @param _to {String}
+     */
+    this.setTo = function (_to) {
+        to = _to;
+    };
+
+    /**
+     *
+     * @return {String}
+     */
+    this.getTo = function () {
+        return to;
+    };
+
+    /**
+     *
+     * @param _subject {String}
+     */
+    this.setSubject = function (_subject) {
+        subject = _subject;
+    };
+
+    /**
+     *
+     * @return {String}
+     */
+    this.getSubject = function () {
+        return subject;
+    };
+
+    /**
+     *
+     * @param _html {String}
+     */
+    this.setHtml = function (_html) {
+        html = _html;
+    };
+
+    /**
+     *
+     * @return {String}
+     */
+    this.getHtml = function () {
+        return html;
+    };
+
+    /**
+     *
+     * @param _template {String}
+     */
+    this.setTemplate = function (_template) {
+        template = _template;
+    };
+
+    /**
+     *
+     * @return {String}
+     */
+    this.getTemplate = function () {
+        return template;
+    };
+
+    /**
+     *
+     * @param _codificacao {String}
+     */
+    this.setCodificacao = function (_codificacao) {
+        codificacao = _codificacao;
+    };
+
+    /**
+     *
+     * @return {String}
+     */
+    this.getCodificacao = function () {
+        return codificacao;
+    };
+
+    /**
+     *
+     * @param _mensagens {String}
+     */
+    this.setMensagens = function (_mensagens) {
+        mensagens = _mensagens;
+    };
+
+    /**
+     *
+     * @return {String}
+     */
+    this.getMensagens = function () {
+        return mensagens;
+    };
+
+    /**
+     *
+     * @param callback {Function}
+     */
+    this.enviarEmail = function (callback) {
+
+        if (this.getTemplate() !== null)
+            geraHTML();
+
+        nodemailer.createTransport(
+            this.geraObjetoTransporter()
+        ).sendMail(
+            this.geraObjetoOptions(),
+            (error, info) => {
+                if (error) {
+                    return console.log(error);
+                }
+                console.log('Message %s sent: %s', info.messageId, info.response);
+                callback();
+            }
+        );
+    };
 }
 module.exports = NodeMailer;
 
 
-// const nodemailer = new NodeMailer();
-//
-// nodemailer.setTemplate('recuperar-senha', {
-//     mensagem: '*URL PARA RECUPERAR SENHA*'
-// });
-//
-// nodemailer.sendEmail((erro, info)=>{
-//     console.log('e-mail enviado' + info);
-// });
+// let mailer = new NodeMailer();
+// // mailer.setTemplate('e-mail.ejs');
+// mailer.setSubject('sem template');
+// // mailer.setMensagens({
+// //     mensagem: 'Acesse a URL x para ativar seu email'
+// // });
+// mailer.setHtml("<html>Mensagem sem template</html>");
+// mailer.enviarEmail();
 
 
-const optionsTransporter = {
-    host: 'gmail',
-    port: 465,
-    secure: true,
-    auth: {
-        user: 'aplicativoliberep@gmail.com',
-        pass: 'mgrossagrossa'
-    }
-};
-
-const optionsMail = {
-    from: '"Aplicativo Liberep" <aplicativoliberep@gmail.com>',
-    to: 'mathiasgheno@gmail.com',
-    subject: 'Teste Templete ✔',
-    html: '<html>oi</html>'
-};
-
-const optionTamplate = {
-    template: 'e-mail.ejs',
-    codificacao: 'utf-8',
-    mensagens: {
-        mensagem: 'olá, funciona'
-    },
-};
-
-let mailer = new NodeMailer(optionsTransporter, optionsMail, optionTamplate);
-console.log(mailer.geraObjetoComValoresPadroes());
-console.log(mailer.geraTodasAsConfiguracoes());
+const mailer = new NodeMailer();
+mailer.setTemplate('e-mail.ejs');
+mailer.setSubject('Confirme o seu e-mail, novamente');
+mailer.setMensagens({
+    mensagem: 'funciona assim tmb. :D '
+});
+// console.log(mailer.geraHtmlTemplate());
+// console.log(mailer.getTemplate());
+mailer.enviarEmail();

@@ -2,7 +2,7 @@
  * Created by mathias on 08/06/17.
  */
 const optionsTransporter = {
-    host: 'gmail',
+    host: 'smtp.gmail.com',
     port: 465,
     secure: true,
     auth: {

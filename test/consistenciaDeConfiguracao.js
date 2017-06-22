@@ -109,6 +109,7 @@ describe('Teste de consistência de configurações', function() {
             };
 
             let mailer = new NodeMailer(optionsTransporter, optionsMail, optionTamplate);
+
             done();
         });
 
@@ -130,6 +131,9 @@ describe('Teste de consistência de configurações', function() {
             }
         });
 
-
+        /**
+         * TODO
+         * finalizar os testes de envio de e-mail com e sem template
+         */
     });
 });
